@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookmanagement-dep
+  labels:
+    app: bookmanagement-app
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      component: bookmanagement
+  template:
+    metadata: 
+      labels:
+        component: bookmanagement
+    spec:
+      containers:
+        - name: bookapp
+          image: tanzuacrdemo.azurecr.io/bookapp:latest
+          imagePullPolicy: IfNotPresent   
+          ports:
+            - containerPort: 8090
+        - name: mssql
+          image: tanzuacrdemo.azurecr.io/mssql:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 1433
+      imagePullSecrets:
+        - name: acr-subha
