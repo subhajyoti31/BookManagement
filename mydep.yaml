@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multi-container-dep
+  labels:
+    app: aspnet-core-multi-container-app
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      component: multi-container
+  template:
+    metadata: 
+      labels:
+        component: multi-container
+    spec:
+      containers:
+        - name: cmultiapp
+          image: tanzuacrdemo.azurecr.io/multiapp-subha:v1
+          imagePullPolicy: IfNotPresent   
+          ports:
+            - containerPort: 80
+        - name: cmultiapi
+          image: tanzuacrdemo.azurecr.io/multiapi-subha:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 81
+      imagePullSecrets:
+        - name: acr-subha
