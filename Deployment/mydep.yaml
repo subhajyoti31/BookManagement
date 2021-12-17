@@ -1,29 +1,46 @@
+# Frontend MVC deployment 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bookmanagement-dep
-  labels:
-    app: bookmanagement-app
 spec:
   replicas: 1
   selector: 
     matchLabels:
-      component: bookmanagement
+      app: bookmanagement
   template:
     metadata: 
       labels:
-        component: bookmanagement
+        app: bookmanagement
     spec:
       containers:
         - name: bookapp
-          image: tanzuacrdemo.azurecr.io/bookapp:latest
-          imagePullPolicy: IfNotPresent   
+          image: tanzuacrdemo.azurecr.io/bookapp:v1
+          imagePullPolicy: Always   
           ports:
             - containerPort: 8090
         - name: mssql
-          image: tanzuacrdemo.azurecr.io/mssql:latest
-          imagePullPolicy: IfNotPresent
+          image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+          imagePullPolicy: Always
           ports:
             - containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SA_PASSWORD
+              value: "Docker2021"
       imagePullSecrets:
         - name: acr-subha
+---
+# Frontend MVC service
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookmanagement-svc
+spec:
+  ports: 
+  - port: 8090
+    targetPort: 80
+  selector:
+    app: bookmanagement
+  type: LoadBalancer
